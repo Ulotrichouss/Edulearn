@@ -2,7 +2,7 @@ const express = require('express')
 const UserController = require("../controllers/UserController")
 const ClassController = require('../controllers/ClassController')
 const router = express.Router()
-const checkToken = require('../utils/checkToken.js')
+const checkToken = require('../middleware/checkToken.js')
 
 const multer = require('multer')
 const path = require('path')

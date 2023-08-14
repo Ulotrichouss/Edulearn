@@ -69,7 +69,7 @@ module.exports = {
     },
 
     profile: (req, res) => {
-        var id = req.decode.id
+        var id = req.decode
         User.findOne({ _id: id })
         .then(data=>{
             res.json({
