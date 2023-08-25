@@ -4,6 +4,8 @@ const route = require('./routes/main.js')
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser')
+const multer = require('multer')
+const upload = multer()
 require('dotenv').config();
 
 const app = express()
@@ -11,8 +13,10 @@ const app = express()
 var http = require('http').createServer(app);
 var port = process.env.PORT || 3000;
 
+app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
-route.use(bodyParser.json())
+
+app.use(express.json());
 
 app.use(morgan("dev"))
 app.use(cookieParser())

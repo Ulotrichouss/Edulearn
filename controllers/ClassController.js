@@ -1,24 +1,89 @@
-var Cate = require('../models/Categories.js');
-var Tool = require('../models/Tools.js');
-var Class = require('../models/Class.js');
-var Rate = require('../models/Rates.js')
+const Cate = require('../models/Categories.js')
+const Tool = require('../models/Tools.js')
+const Class = require('../models/Class.js')
+const Rate = require('../models/Rates.js')
+const Lesson = require('../models/Lesson.js')
+
 module.exports = {
 
-    // [GET] /new
-    getRate: (req, res) => {
-        var classid = req.params.classId
+    // [GET] /lesson/:classId
+    getLesson: (req, res) => {
+        let id = req.params.classId
 
-        Rate.find((cid)=>cid.id.toString() == classid)
+        Lesson.findAll({classId: id})
+        .then((data)=>{
+            res.json(data)
+        })
+    },
+
+    // [POST] /lesson/add/:classId
+    addLesson: (req, res) => {
+        var data = new Lesson({
+            classId: req.params.classId,
+            name: req.body.name,
+            file: req.file.filename,
+        })
+
+        data.save().then((rs)=>{
+            res.json({
+                success: true,
+                data: rs,
+            })
+        })
+    },
+
+    putLesson: (req, res) => {
+        let id = req.params.lessonId
+        let data = { 
+            name:req.body.name,
+            userId:req.body.userId 
+        }
+
+        if(req.file) {
+            data.image = req.file.filename
+        }
+
+        Lesson.findByIdAndUpdate(id,data)
+            .then((data) => {
+                res.status(201).json({
+                    msg: 'Update success'
+                })
+            })
+            .catch((err)=>{
+                res.status(500).json(err)
+            })
+    },
+
+    deleteLesson: (req, res) => {
+        let id = req.params.lessonId
+
+        Lesson.findByIdAndDelete(id)
+            .then((data) => {
+                res.status(201).json({
+                    msg: 'Delete success'
+                })
+            })
+            .catch((err)=>{
+                res.status(500).json(err)
+            })
+    },
+
+    // [GET] /rate/:classId
+    getRate: (req, res) => {
+        let classId = req.params.classId
+
+        Rate.find({classId: classId})
         .then((data)=> {
-            res.render(data);
+            res.json(data)
         })
 
     },
 
+    // [POST] /rate/add/:classId
     addRate: (req, res) => {
         var data = new Rate({
-            clasId: req.params.classId,
-            userId: req.decode.id,
+            classId: req.params.classId,
+            userId: req.decode,
             star: req.body.number,
         })
 
@@ -26,48 +91,112 @@ module.exports = {
         .then(data=>{
             res.json({
                 success: true,
-                user: data,
+                data: data,
             })
         })
     },
 
-    getClass: (req, res) => {
-
-    },
-
-    detailClass: (req, res) => {
-        var classid =  req.params.classId
-
-        Class.findByPk(classid)
-        .then((data) => {
-            
-        })
-    },
-
-    class: (req, res) => {
-
-    },
-
-    class: (req, res) => {
-
-    },
-
-    getCate: (req, res) => {
-        Cate.findAll()
-            .then((data) => {
-                res.render(data);
-            })
-
-    },
-
-    addCate: (req, res) => {
-        var data = new Cate({
-            name: req.body.name,
-        })
-        if(req.file) {
-            data.img = req.file.path
+    putRate: (req, res) => {
+        let id = req.params.rateId
+        var data = {
+            star: req.body.number,
+            userId: req.decode
         }
+
+        Rate.findByIdAndUpdate(id,data)
+            .then((data) => {
+                res.status(201).json({
+                    msg: 'Update success'
+                })
+            })
+            .catch((err)=>{
+                res.status(500).json(err)
+            })
+    },
+
+    deleteRate: (req, res) => {
+        let id = req.params.rateId
+
+        Rate.findByIdAndDelete(id)
+            .then((data) => {
+                res.status(201).json({
+                    msg: 'Delete success'
+                })
+            })
+            .catch((err)=>{
+                res.status(500).json(err)
+            })
+    },
+
+    getAllClass: (req, res) => {
+
+        Class.find({})
+        .populate('tool')
+            .then((data) => {
+                res.json(data);
+            })
+    },
+
+    // [POST] /class/add
+    addClass: (req, res) => {
+        //push item keypoint,benefit to array
+        const {keypoint,benefit} = req?.body
+        const arrayK = [...keypoint]
+        const arrayB = [...benefit]
+            
+        const data = new Class({
+            author : req.decode,
+            video : req.body.video,
+            image :  req.body.image,
+            title : req.body.title,
+            intro :  req.body.intro,
+            about : req.body.about,
+            keypoint: arrayK,
+            benefit : arrayB,
+            mentor: [{
+                name: req.body.mentor[0].name,
+                image: req.body.mentor[0].image,
+                about: req.body.mentor[0].about
+            }],
+            tool : req.body.tool,
+            price : req.body.price
+        })
+
         data.save()
+            .then((result) => {
+                res.status(201).json(result)
+            })
+            .catch((err)=>{
+                res.status(500).json(err)
+            })
+
+    },
+
+    // [GET] /class/:classId
+    detailClass: (req, res) => {
+        let id = req.params.classId
+
+        Class.find({_id: id})
+        .populate('tool')
+            .then((data) => {
+                res.json(data);
+            })
+    },
+
+    // [GET] /cate
+    getCate: (req, res) => {
+        Cate.find({})
+            .then((data) => {
+                res.status(201).json(data);
+            })
+    },
+
+    // [POST] /cate/add
+    addCate: (req, res) => {
+        let name = req.body.name
+        let img = req.file.filename
+
+        Cate.create({name: name,image: img})
             .then((result) => {
                 res.status(201).json(result)
             })
@@ -76,9 +205,53 @@ module.exports = {
             })
     },
 
+    putCate: (req, res) => {
+        let id = req.params.cateId
+        let data = { name:req.body.name }
+
+        if(req.file) {
+            data.image = req.file.filename
+        }
+
+        Cate.findByIdAndUpdate(id,data)
+            .then((data) => {
+                res.status(201).json({
+                    msg: 'Update success'
+                })
+            })
+            .catch((err)=>{
+                res.status(500).json(err)
+            })
+    },
+
+    deleteCate: (req, res) => {
+        let id = req.params.cateId
+
+        Cate.findByIdAndDelete(id)
+            .then((data) => {
+                res.status(201).json({
+                    msg: 'Delete success'
+                })
+            })
+            .catch((err)=>{
+                res.status(500).json(err)
+            })
+    },
+
+    // [GET] /tool
+    getTool: (req, res) => {
+        Tool.find({})
+            .then((data) => {
+                res.json(data);
+            })
+
+    },
+
+    // [POST] /tool/add
     addTool: (req, res) => {
-        var name = req.body.name
-        var img = req.file.filename
+        let name = req.body.name
+        let img = req.file.filename
+
         Tool.create({name: name,image: img})
             .then((result) => {
                 res.json(result)
@@ -88,13 +261,37 @@ module.exports = {
             })
     }, 
 
-    getTool: (req, res) => {
-        var Idclass = req.params.classId
+    putTool: (req, res) => {
+        let id = req.params.toolId
+        let data = { name:req.body.name }
 
-        Cate.find({})
+        if(req.file) {
+            data.image = req.file.filename
+        }
+
+        Tool.findByIdAndUpdate(id,data)
             .then((data) => {
-                res.render(data);
+                res.status(201).json({
+                    msg: 'Update success',
+                })
             })
-
+            .catch((err)=>{
+                res.status(500).json(err)
+            })
     },
+
+    deleteTool: (req, res) => {
+        let id = req.params.toolId
+
+        Tool.findByIdAndDelete(id)
+            .then((data) => {
+                res.status(201).json({
+                    msg: 'Delete success'
+                })
+            })
+            .catch((err)=>{
+                res.status(500).json(err)
+            })
+    },
+
 }

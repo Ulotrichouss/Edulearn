@@ -1,21 +1,17 @@
 const mongoose = require('mongoose')
-const {ObjectId} = require('mongodb')
+const Schema = mongoose.Schema
 
 const Class = new mongoose.Schema ({
-    author: { type: ObjectId,ref: "Users"},
+    author: { type: Schema.Types.ObjectId,ref: "Users"},
     video: { type: String },
     image: { type: String },
     title: { type: String },
     intro: { type: String },
     about: { type: String },
-    keypoint: [{
-        type: String
-    }],
-    benefit: [{
-        type: String
-    }],
-    tool: [{ 
-        type: ObjectId, ref: "Tools"
+    keypoint: [ String ],
+    benefit: [ String ],
+    tool: [{
+        type: Schema.Types.ObjectId, ref: "Tools"
     }],
     mentor: [{ 
         name: String,
@@ -23,8 +19,7 @@ const Class = new mongoose.Schema ({
         about: String 
     }],
     register: [{ 
-        type: ObjectId,
-        ref: "Users"
+        type: Schema.Types.ObjectId, ref: "Users"
     }],
     price: { type: String },
 })
