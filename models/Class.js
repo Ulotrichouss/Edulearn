@@ -13,11 +13,11 @@ const Class = new mongoose.Schema ({
     tool: [{
         type: Schema.Types.ObjectId, ref: "Tools"
     }],
-    mentor: [{ 
+    mentor: { 
         name: String,
-        image: String,
+        images: String,
         about: String 
-    }],
+    },
     register: [{ 
         type: Schema.Types.ObjectId, ref: "Users"
     }],

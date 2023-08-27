@@ -1,13 +1,14 @@
 const jwt = require('jsonwebtoken')
+const User = require('../models/Users.js')
 require('dotenv').config()
 
 module.exports = function(req, res, next) {
-    var auth = req.header('Authorization')
-    let token = auth && auth.split(' ')[1]
-    
+    // let auth = req.header('Authorization')
+    // let token = auth && auth.split(' ')[1]
+    let token = req.cookies.token
     try {
         if(token) {
-            var decode = jwt.verify(token, process.env.JWT_SERCET)
+            let decode = jwt.verify(token, process.env.JWT_SERCET)
             req.decode = decode.id
             next()
         } else {

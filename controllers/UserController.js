@@ -17,13 +17,17 @@ module.exports = {
                         msg: 'Invalid Password'
                     })
                 }
-
-                let token = jwt.sign({ id: data._id}, 
+                let token = jwt.sign({id: data._id}, 
                     process.env.JWT_SERCET, {
                     expiresIn: '1h'
                 })
+
+                res.cookie('token',token, {
+                    httpOnly: true,
+                })
                 res.status(200).json({
                     token: token
+                    
                 })  
             } else {
                 res.status(401).json({
@@ -42,7 +46,7 @@ module.exports = {
     register: (req, res) => {
         const user = new User({
             email : req.body.email,
-            password : bcrypt.hashSync(req.body.password),
+            password : req.body.password,
             edu : req.body.edu,
             age : req.body.age,
             phone : req.body.phone,
@@ -74,16 +78,10 @@ module.exports = {
     },
 
     logout: (req, res) => {
-        if(token) {
-            jwt.destroy(token)
-            res.status(200).json({
-                msg:'Logout Success'
-            })
-        } else {
-            res.status(401).json({
-                msg: 'Logout Error'
-            })
-        }
+        res.clearCookie('token')
+        res.status(200).json({
+            msg:'Logout Success'
+        })
     },
 
     profile: (req, res) => {
@@ -145,7 +143,7 @@ module.exports = {
 
     changePwd: (req, res) => {
         let id = req.decode
-        let password = bcrypt.compareSync(req.body.password)
+        let password = req.body.password
 
         User.findByIdAndUpdate(id,password)
         .then(data=>{

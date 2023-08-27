@@ -140,36 +140,83 @@ module.exports = {
     // [POST] /class/add
     addClass: (req, res) => {
         //push item keypoint,benefit to array
-        const {keypoint,benefit} = req?.body
+        const {keypoint,benefit,tool} = req?.body
         const arrayK = [...keypoint]
         const arrayB = [...benefit]
+        const arrayT = [...tool]
             
         const data = new Class({
             author : req.decode,
-            video : req.body.video,
-            image :  req.body.image,
+            video : req.files.video[0].filename,
             title : req.body.title,
             intro :  req.body.intro,
             about : req.body.about,
+            image : req.files.image[0].filename,
             keypoint: arrayK,
             benefit : arrayB,
-            mentor: [{
-                name: req.body.mentor[0].name,
-                image: req.body.mentor[0].image,
-                about: req.body.mentor[0].about
-            }],
-            tool : req.body.tool,
+            tool : arrayT,
             price : req.body.price
         })
 
-        data.save()
-            .then((result) => {
-                res.status(201).json(result)
-            })
-            .catch((err)=>{
-                res.status(500).json(err)
-            })
+        // data.save()
+        // .then((result) => {
+        //     res.status(201).json(result)
+        // })
+        // .catch((err)=>{
+        //     res.status(500).json(err)
+        // })
 
+        res.json(data)
+    },
+
+    putClass: (req, res) => {
+        let id = req.params.classId
+        
+        const {keypoint,benefit,tool} = req?.body
+        const {arrayK,arrayB,arrayT} = []
+        
+        var data = {
+            title : req.body.title,
+            intro :  req.body.intro,
+            about : req.body.about,           
+            price : req.body.price
+        }
+
+        if(req.file) {
+            data.image = req.file.image[0].filename
+            data.video = req.file.video[0].filename
+        }
+
+        if(keypoint,benefit,tool !== null) {
+            arrayK = [...keypoint]
+            arrayB = [...benefit]
+            arrayT = [...tool]
+
+            data.keypoint = arrayK
+            data.benefit = arrayB
+            data.tool = arrayT
+        }
+
+        Class.findByIdAndUpdate(id,data)
+        //.populate('tool')
+        .then((data) => {
+            res.json(data);
+        })
+        
+    },
+
+    deleteClass: (req, res) => {
+        let id = req.params.classId
+
+        Class.findByIdAndDelete(id)
+        .then((data) => {
+            res.status(201).json({
+                msg: 'Delete success'
+            })
+        })
+        .catch((err)=>{
+            res.status(500).json(err)
+        })
     },
 
     // [GET] /class/:classId

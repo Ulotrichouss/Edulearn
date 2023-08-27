@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser')
 const multer = require('multer')
 const upload = multer()
-require('dotenv').config();
+require('dotenv').config()
 
 const app = express()
 
