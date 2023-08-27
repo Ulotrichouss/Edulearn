@@ -158,15 +158,13 @@ module.exports = {
             price : req.body.price
         })
 
-        // data.save()
-        // .then((result) => {
-        //     res.status(201).json(result)
-        // })
-        // .catch((err)=>{
-        //     res.status(500).json(err)
-        // })
-
-        res.json(data)
+        data.save()
+        .then((result) => {
+            res.status(201).json(result)
+        })
+        .catch((err)=>{
+            res.status(500).json(err)
+        })
     },
 
     putClass: (req, res) => {
