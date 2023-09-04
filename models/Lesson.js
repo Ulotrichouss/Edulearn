@@ -1,7 +1,7 @@
 const { ObjectId } = require('mongodb')
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var LessonSchema = new mongoose.Schema ({
+const LessonSchema = new mongoose.Schema ({
     classId: { type: ObjectId, ref: 'Class' },
     name: { type: String },
     file: { type: String },

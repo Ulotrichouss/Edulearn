@@ -12,7 +12,11 @@ const UserSchema = new mongoose.Schema ({
     password: { type: String },
     image: { type: String },
     about: { type: String },
-    role: { type: Number },
+    role: { 
+        type: String,
+        enum: ['user','author','admin'],
+        default: 'user'
+    },
     token: { type: String },
 },{
     timestamps: true

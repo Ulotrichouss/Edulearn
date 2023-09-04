@@ -1,8 +1,8 @@
 const Cate = require('../models/Categories.js')
 const Tool = require('../models/Tools.js')
 const Class = require('../models/Class.js')
-const Rate = require('../models/Rates.js')
 const Lesson = require('../models/Lesson.js')
+const Group = require('../models/Groups.js')
 
 module.exports = {
 
@@ -72,28 +72,54 @@ module.exports = {
     getRate: (req, res) => {
         let classId = req.params.classId
 
-        Rate.find({classId: classId})
+        Class.findById(classId)
         .then((data)=> {
-            res.json(data)
+            let count = data.rating.length
+            res.json({
+                data,
+                count
+            })
         })
-
     },
 
     // [POST] /rate/add/:classId
-    addRate: (req, res) => {
-        var data = new Rate({
-            classId: req.params.classId,
-            userId: req.decode,
-            star: req.body.number,
-        })
+    addRate: async (req, res) => {
+        const user = req.decode
+        const {star} = req?.body
+        const {classId} = req?.params
 
-        data.save()
-        .then(data=>{
-            res.json({
-                success: true,
-                data: data,
-            })
-        })
+        try {
+            const data = await Class.findById(classId)
+            let rate = data.rating
+            const check = rate.find((r) => r.userId == user)
+            if(check) {
+                const updateRating = await Class.updateOne(
+                    { "rating.userId":user},
+                    { $set: {"rating.$.star": star}},
+                    { new: true }
+                )
+            } else {
+                const createRating = await Class.findByIdAndUpdate( classId,
+                    {$push: {rating: {star: star, userId: user}}},
+                    {safe: true, upsert: true}
+                )
+            }
+
+            const getRating = await Class.findById(classId)
+            let totalRating = getRating.rating.length
+            let ratingSum = getRating.rating
+                .map((item) => item.star)
+                .reduce((prev, curr) => prev + curr, 0)
+            let rating = Math.round(ratingSum / totalRating)
+            let final = await Class.findByIdAndUpdate(classId,
+                { totalRating: rating },
+                { new: true }
+            )
+            res.json(final)
+        } catch (error) {
+            res.json(error)
+        }
+
     },
 
     putRate: (req, res) => {
@@ -103,7 +129,7 @@ module.exports = {
             userId: req.decode
         }
 
-        Rate.findByIdAndUpdate(id,data)
+        Class.findByIdAndUpdate(id,data)
             .then((data) => {
                 res.status(201).json({
                     msg: 'Update success'
@@ -117,7 +143,7 @@ module.exports = {
     deleteRate: (req, res) => {
         let id = req.params.rateId
 
-        Rate.findByIdAndDelete(id)
+        Class.findByIdAndDelete(id)
             .then((data) => {
                 res.status(201).json({
                     msg: 'Delete success'
@@ -226,6 +252,27 @@ module.exports = {
             .then((data) => {
                 res.json(data);
             })
+    },
+
+    getGroup: (req, res) => {
+        Group.findAll({})
+        .then((data) => {
+            res.json(Object.keys(data.classId[i]).length);
+        })
+    },
+
+    addGroup: (req, res) => {
+        var data = new Group({
+            name : req.body.name,
+            // image : req.file.filename,
+            include: req.body.include.map(skill => {
+                return {
+                    classId: skill.classId,
+                    level: skill.level
+                }
+            })
+        })
+        res.json(data)
     },
 
     // [GET] /cate
@@ -337,6 +384,32 @@ module.exports = {
             .catch((err)=>{
                 res.status(500).json(err)
             })
+    },
+
+    registerClass: async (req, res) => {
+        const user = req.decode
+        const {classId} = req?.params
+        try {
+            const data = await Class.findById(classId)
+            const check = data.register.find((r) => r == user)
+            if(check) {
+                const deleteRegister = await Class.findByIdAndUpdate( classId,
+                    {$pull: {register: {$in:[user]}}},
+                    {new: true}
+                )
+            } else {
+                const createRegister = await Class.findByIdAndUpdate( classId,
+                    {$push: {register: user}},
+                    {safe: true, upsert: true}
+                )
+            }
+
+            let getRegister = await Class.findById(classId)
+            res.json(getRegister)
+        } catch (error) {
+            res.json(error)
+        }
+
     },
 
 }

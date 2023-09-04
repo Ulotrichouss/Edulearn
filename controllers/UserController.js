@@ -26,6 +26,7 @@ module.exports = {
                     httpOnly: true,
                 })
                 res.status(200).json({
+                    data:data,
                     token: token
                     
                 })  
@@ -156,6 +157,5 @@ module.exports = {
                 err
             })
         })
-    }
-    
+    },
 }

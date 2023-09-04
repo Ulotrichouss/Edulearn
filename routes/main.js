@@ -1,6 +1,6 @@
 const express = require('express')
 const UserController = require('../controllers/UserController')
-const ClassController = require('../controllers/ClassController')
+const MainController = require('../controllers/MainController')
 const router = express.Router()
 const checkToken = require('../middleware/checkToken.js')
 
@@ -28,42 +28,47 @@ router.put('/user/update/:userId',checkToken,UserController.putUser)
 router.delete('/user/delete/:userId',checkToken,UserController.deleteUser)
 
 //route Tool
-router.get('/tool',ClassController.getTool)
-router.post('/tool/add',upload.single("image"),ClassController.addTool)
-router.put('/tool/update/:toolId',upload.single("image"),ClassController.putTool)
-router.delete('/tool/delete/:toolId',ClassController.deleteTool)
+router.get('/tool',MainController.getTool)
+router.post('/tool/add',upload.single("image"),MainController.addTool)
+router.put('/tool/update/:toolId',upload.single("image"),MainController.putTool)
+router.delete('/tool/delete/:toolId',MainController.deleteTool)
 
 //route Cate
-router.get('/cate',ClassController.getCate)
-router.post('/cate/add',upload.single("image"),ClassController.addCate)
-router.put('/cate/update/:cateId',upload.single("image"),ClassController.putCate)
-router.delete('/cate/delete/:cateId',ClassController.deleteCate)
+router.get('/cate',MainController.getCate)
+router.post('/cate/add',upload.single("image"),MainController.addCate)
+router.put('/cate/update/:cateId',upload.single("image"),MainController.putCate)
+router.delete('/cate/delete/:cateId',MainController.deleteCate)
 
 //route Rate
-router.get('/rate/:classId',ClassController.getRate)
-router.post('/rate/add/:classId',checkToken,ClassController.getRate)
-router.put('/rate/update/:rateId',checkToken,ClassController.putRate)
-router.delete('/rate/delete/:rateId',ClassController.deleteRate)
+router.get('/rate/:classId',MainController.getRate)
+router.post('/rate/add/:classId',checkToken,MainController.addRate)
+router.put('/rate/update/:rateId',checkToken,MainController.putRate)
+router.delete('/rate/delete/:rateId',MainController.deleteRate)
 
 //route Class
-router.get('/class',ClassController.getAllClass)
+router.get('/class',MainController.getAllClass)
 router.post('/class/add',checkToken,upload.fields([{
     name: 'image', maxCount: 1
   }, {
     name: 'video', maxCount: 1
-  }]),ClassController.addClass)
-router.get('/class/:classId',ClassController.detailClass)
+  }]),MainController.addClass)
+router.get('/class/:classId',MainController.detailClass)
 router.put('/class/update/:classId',upload.fields([{
     name: 'image', maxCount: 1
   }, {
     name: 'video', maxCount: 1
-  }]),ClassController.putClass)
-router.delete('/class/delete/:classId',ClassController.deleteClass)     
+  }]),MainController.putClass)
+router.delete('/class/delete/:classId',MainController.deleteClass)  
 
+router.post('/class/register/:classId',checkToken, MainController.registerClass)
+
+//route Group
+router.get('/group',MainController.getGroup)
+router.post('/group/add',upload.single("image"),MainController.addGroup)
 //route Lesson
-router.get('/lesson/:classId',ClassController.getLesson)
-router.post('/lesson/add/:classId',upload.single("file"),ClassController.addLesson)
-router.put('/lesson/update/:lessonId',ClassController.putLesson)
-router.delete('/lesson/delete/:lessonId',ClassController.deleteLesson)
+router.get('/lesson/:classId',MainController.getLesson)
+router.post('/lesson/add/:classId',upload.single("file"),MainController.addLesson)
+router.put('/lesson/update/:lessonId',MainController.putLesson)
+router.delete('/lesson/delete/:lessonId',MainController.deleteLesson)
 
 module.exports = router;

@@ -1,6 +1,6 @@
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var ToolSchema = new mongoose.Schema ({
+const ToolSchema = new mongoose.Schema ({
     name: { type: String },
     image: { type: String }
 })

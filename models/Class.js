@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
+const { ObjectId } = require('mongodb')
 
 const Class = new mongoose.Schema ({
-    author: { type: Schema.Types.ObjectId,ref: "Users"},
+    author: { type: ObjectId,ref: "Users"},
     video: { type: String },
     image: { type: String },
     title: { type: String },
@@ -11,17 +11,17 @@ const Class = new mongoose.Schema ({
     keypoint: [ String ],
     benefit: [ String ],
     tool: [{
-        type: Schema.Types.ObjectId, ref: "Tools"
+        type: ObjectId, ref: "Tools"
     }],
-    mentor: { 
-        name: String,
-        images: String,
-        about: String 
-    },
     register: [{ 
-        type: Schema.Types.ObjectId, ref: "Users"
+        type: ObjectId, ref: "Users"
+    }],
+    rating: [{
+        userId: { type: ObjectId, ref: "Users"},
+        star: Number
     }],
     price: { type: String },
+    totalRating: { type: Number, default: 0}
 })
 
 module.exports = mongoose.model('Class',Class);
