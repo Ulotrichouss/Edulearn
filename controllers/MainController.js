@@ -18,7 +18,7 @@ module.exports = {
 
     // [POST] /lesson/add/:classId
     addLesson: (req, res) => {
-        var data = new Lesson({
+        let data = new Lesson({
             classId: req.params.classId,
             name: req.body.name,
             file: req.file.filename,
@@ -69,7 +69,7 @@ module.exports = {
     },
 
     // [GET] /rate/:classId
-    getRate: (req, res) => {
+    getRating: (req, res) => {
         let classId = req.params.classId
 
         Class.findById(classId)
@@ -83,7 +83,7 @@ module.exports = {
     },
 
     // [POST] /rate/add/:classId
-    addRate: async (req, res) => {
+    changeRating: async (req, res) => {
         const user = req.decode
         const {star} = req?.body
         const {classId} = req?.params
@@ -122,42 +122,15 @@ module.exports = {
 
     },
 
-    putRate: (req, res) => {
-        let id = req.params.rateId
-        var data = {
-            star: req.body.number,
-            userId: req.decode
-        }
+    // deleteRate: async (req, res) => {
+    //     let id = req.params.rateId
 
-        Class.findByIdAndUpdate(id,data)
-            .then((data) => {
-                res.status(201).json({
-                    msg: 'Update success'
-                })
-            })
-            .catch((err)=>{
-                res.status(500).json(err)
-            })
-    },
-
-    deleteRate: (req, res) => {
-        let id = req.params.rateId
-
-        Class.findByIdAndDelete(id)
-            .then((data) => {
-                res.status(201).json({
-                    msg: 'Delete success'
-                })
-            })
-            .catch((err)=>{
-                res.status(500).json(err)
-            })
-    },
+    //     const getData = await Class.find({'rating._id':id})
+    // },
 
     getAllClass: (req, res) => {
 
         Class.find({})
-        .populate('tool')
             .then((data) => {
                 res.json(data);
             })
@@ -173,7 +146,7 @@ module.exports = {
             
         const data = new Class({
             author : req.decode,
-            video : req.files.video[0].filename,
+            //video : req.files.video[0].filename,
             title : req.body.title,
             intro :  req.body.intro,
             about : req.body.about,
@@ -199,7 +172,7 @@ module.exports = {
         const {keypoint,benefit,tool} = req?.body
         const {arrayK,arrayB,arrayT} = []
         
-        var data = {
+        let data = {
             title : req.body.title,
             intro :  req.body.intro,
             about : req.body.about,           
@@ -255,16 +228,16 @@ module.exports = {
     },
 
     getGroup: (req, res) => {
-        Group.findAll({})
-        .then((data) => {
-            res.json(Object.keys(data.classId[i]).length);
-        })
+        Group.find({})
+            .then((data) => {
+                res.json(data);
+            })
     },
 
     addGroup: (req, res) => {
-        var data = new Group({
+        let data = new Group({
             name : req.body.name,
-            // image : req.file.filename,
+            image : req.file.filename,
             include: req.body.include.map(skill => {
                 return {
                     classId: skill.classId,
@@ -272,6 +245,7 @@ module.exports = {
                 }
             })
         })
+        data.save()
         res.json(data)
     },
 

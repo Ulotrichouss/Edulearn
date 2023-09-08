@@ -45,7 +45,7 @@ module.exports = {
     },
 
     register: (req, res) => {
-        const user = new User({
+        let user = new User({
             email : req.body.email,
             password : req.body.password,
             edu : req.body.edu,
@@ -81,7 +81,7 @@ module.exports = {
     logout: (req, res) => {
         res.clearCookie('token')
         res.status(200).json({
-            msg:'Logout Success'
+            msg:'Logout Success',
         })
     },
 
@@ -96,7 +96,7 @@ module.exports = {
     putProfile: (req, res) => {
         let id = req.decode
         const { email,edu,age,phone } = req.body 
-        var data = {email,edu,age,phone}
+        let data = {email,edu,age,phone}
         
         User.findByIdAndUpdate(id,data)
         .then(data=>{
@@ -113,7 +113,7 @@ module.exports = {
     putUser: (req, res) => {
         let id = req.params.userId
         const { email,edu,age,phone } = req.body 
-        var data = {email,edu,age,phone}
+        let data = {email,edu,age,phone}
         
         User.findByIdAndUpdate(id,data)
         .then(data=>{
@@ -158,4 +158,8 @@ module.exports = {
             })
         })
     },
+
+    test:(req,res) =>{
+        res.json(decode)
+    }
 }

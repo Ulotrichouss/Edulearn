@@ -40,10 +40,9 @@ router.put('/cate/update/:cateId',upload.single("image"),MainController.putCate)
 router.delete('/cate/delete/:cateId',MainController.deleteCate)
 
 //route Rate
-router.get('/rate/:classId',MainController.getRate)
-router.post('/rate/add/:classId',checkToken,MainController.addRate)
-router.put('/rate/update/:rateId',checkToken,MainController.putRate)
-router.delete('/rate/delete/:rateId',MainController.deleteRate)
+router.get('/rating/:classId',MainController.getRating)
+router.post('/rating/change/:classId',checkToken,MainController.changeRating)
+// router.delete('/rate/delete/:rateId',MainController.deleteRate)
 
 //route Class
 router.get('/class',MainController.getAllClass)
